@@ -1,3 +1,5 @@
+import json
+
 def get_user_choice():
     print("=============")
     choose_menu_number = input("choose: ")
@@ -34,7 +36,7 @@ def get_customer_phone_check():
 def repetitive_phone_check():
     while True:
         phone = get_customer_phone_check()
-        with open("customers.txt", 'r') as file:
+        with open("customers.json", 'r') as file:
             content = file.read()
             if phone in content:
                 print("This phone number already exist.")
@@ -50,117 +52,114 @@ def get_customer_email_check():
         print("Wrong format email. Try again.")
 
 
-def add_customer_info():
-    with open("customers.txt", "a") as customer_file:
-        name = get_customer_name()
-        phone = repetitive_phone_check()
-        email = get_customer_email_check()
-        city = get_customer_city()
-        information = f"name: {name}\nphone: {phone}\nemail: {email}\ncity: {city}\n--------------\n"
-        customer_file.write(information)
-        return "Customer added successfully"
+def add_customer():
+    with open("customers.json", "r") as file:
+        customers = json.load(file)
+
+        customer = {
+        "name": get_customer_name(),
+        "phone": repetitive_phone_check(),
+        "email": get_customer_email_check(),
+        "city": get_customer_city()
+        }
+
+        customers.append(customer)
+
+        with open("customers.json", "w") as file:
+            json.dump(customers, file, indent=4, ensure_ascii=False)
+
+        print("Customer added.")
 
 def show_customers():
-    with open("customers.txt") as customer_file:
-        return customer_file.read()
+    with open("customers.json") as file:
+        return file.read()
 
 
-def search_customers():
+def search_customer():
     search_name = input("give me the name you are looking for: ")
-    new_search_list = []
-    skip = False
-    with open("customers.txt", "r") as f:
-        lines = f.readlines()
-    for line in lines:
-        if line.startswith(f"name: {search_name}"):
-            skip = True
-            new_search_list.append(line)
-            continue
 
-        if skip:
-            if line.strip() == "--------------":
-                new_search_list.append(line)
-                skip = False
-                continue
-
-            new_search_list.append(line)
-
-    return new_search_list
-
-def show_search_result():
-    search_result_list = []
-    search_result = search_customers()
-    if search_result == []:
-        return "THERE IS NOTHING"
-    for i in search_result:
-        new_search_customer = i.strip()
-        search_result_list.append(new_search_customer)
-        show_result = "\n".join(search_result_list)
-    return (show_result)
-
+    with open("customers.json", "r") as file:
+        search_result_list = []
+        data = json.load(file)
+        for i in data:
+            if i["name"] == search_name:
+                search_result = f"name : {i["name"]}\nphone : {i["phone"]}\nemail : {i["email"]}\ncity : {i["city"]}\n"
+                search_result_list.append(search_result)
+                return search_result
+        if search_result_list == []:
+            return "Nothing"
 
 def edit_customer():
-    search = search_customers()
+    search = search_customer_with_number()
     if search == []:
         return "there is nothing as you searched"
     edit_item = input("what item do you want to edit: \n 1-name \n 2-phone \n 3-email \n 4-city \n choose the number: ")
+    with open("customers.json", 'r') as file:
+        data = json.load(file)
+        for item in data:
+            if item == search[0]:
+                new_search = item
     if edit_item == "1":
-        old_value = search[0]
+        old_value = new_search["name"]
         edit_name = get_customer_name()
-        new_value = f"name: {edit_name}\n"
+        new_search["name"] = new_search["name"].replace(old_value, edit_name)
     elif edit_item == "2":
-        old_value = search[1]
+        old_value = new_search["phone"]
         while True:
             edit_phone = get_customer_phone()
             if edit_phone.isdigit() and len(edit_phone) == 11:
-                new_value = f"phone: {edit_phone}\n"
+                new_search["phone"] = new_search["phone"].replace(old_value, edit_phone)
                 break
             print(f"Wrong format phone. Try again.")
     elif edit_item == "3":
-        old_value = search[2]
+        old_value = new_search["email"]
         while True:
             edit_email = get_customer_email()
             if "@" in edit_email:
                 if "." in edit_email:
-                    new_value = f"email: {edit_email}\n"
+                    new_search["email"] = new_search["email"].replace(old_value, edit_email)
                     break
                 print("Wrong email. Try again.")
             print("Wrong email. Try again.")
     elif edit_item == "4":
-        old_value = search[3]
+        old_value = new_search["city"]
         edit_city = get_customer_city()
-        new_value = f"city: {edit_city}\n"
+        new_search["city"] = new_search["city"].replace(old_value, edit_city)
     else:
         return ("you entered wrong number please try again")
-    with open("customers.txt", 'r') as file:
-        data = file.read()
-        data = data.replace(old_value, new_value)
-    with open('customers.txt', 'w') as file:
-        file.write(data)
-
+    with open("customers.json", 'w') as file:
+        json.dump(data, file, indent=4)
     return "Customer updated successfully."
 
 
+def search_customer_with_number():
+    search_number = input("give me the customer's number you are looking for: ")
+
+    with open("customers.json", "r") as file:   
+        search_result_list = []
+        data = json.load(file)
+        for line in data:
+            if line["phone"] == search_number:
+                search_result = line
+                search_result_list.append(search_result)
+                return search_result_list
+                break
+        else:
+            return []
+
 def delete_customer():
-    phone = input("Enter phone number to delete: ")
-    with open("customers.txt", "r") as file:
-        lines = file.readlines()
-    new_lines = []
-    skip = False
-    for line in lines:
-        if line.startswith(f"phone: {phone}"):
-            if len(new_lines) > 0:
-                new_lines.pop()
-            skip = True
-            continue
-        if skip:
-            if line.strip() == "--------------":
-                skip = False
-            continue
-        new_lines.append(line)
-    with open("customers.txt", "w") as file:
-        file.writelines(new_lines)
-    print("Customer removed successfully.")
+    info_to_delete = search_customer_with_number()
+    if info_to_delete == []:
+        return "number has not found"
+    else:
+        with open("customers.json", "r") as file:
+            data = json.load(file)
+            item = info_to_delete[0]
+            data.remove(item)
+    with open("customers.json", "w") as file:
+        json.dump(data, file, indent=4)
+        return f"customer has removed successfully"
+
 
 
 def menu():
@@ -179,13 +178,13 @@ while True:
     print(menu())
     choice = get_user_choice()
     if choice == "1":
-        print(add_customer_info())
+        print(add_customer())
     elif choice == "2":
         print(show_customers())
     elif choice == "3":
         print(delete_customer())
     elif choice == "4":
-        print(show_search_result())
+        print(search_customer())
     elif choice == "5":
         print(edit_customer())
     elif choice == "6":
