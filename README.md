@@ -2,58 +2,64 @@
 
 A simple Customer Relationship Management (CRM) application built with Python.
 
+This project was developed to practice Python programming, file handling, and JSON-based data storage.
+
 ## Features
 
 - Add new customer
 - Show all customers
 - Search customer by name
+- Search customer by phone number
 - Edit customer information
 - Delete customer
 - Phone number validation
 - Email validation
-- Duplicate phone number check
+- Duplicate phone number validation
 
 ## Technologies
 
 - Python
-- Text File Storage (.txt)
+- JSON
+- File Handling
 
 ## Project Structure
 
 ```
-customer_crm.py
-customers.txt
-README.md
+customer-crm/
+│── customer_crm.py
+│── customers.json
+│── README.md
 ```
 
-## How to Run
+## Customer Format
 
-1. Clone the repository.
-
-```bash
-git clone https://github.com/hamidd404/customer-crm
+```json
+{
+    "name": "Ali",
+    "phone": "09123456789",
+    "email": "ali@gmail.com",
+    "city": "Tehran"
+}
 ```
 
-2. Move into the project folder.
+## Learning Objectives
 
-```bash
-cd python-customer-crm
-```
+This project helped me practice:
 
-3. Run the program.
-
-```bash
-python customer_crm.py
-```
+- Python Functions
+- Loops
+- Conditions
+- Lists
+- Dictionaries
+- JSON (`json.load` / `json.dump`)
+- CRUD Operations
+- Input Validation
+- File Handling
 
 ## Future Improvements
 
-- Store data using JSON
-- Store data using SQLite
-- Improve email validation
-- Improve search functionality
-- Add unique customer ID
-
-## Author
-
-Hamid Shahzamanian
+- SQLite Database
+- Better Search
+- Exception Handling
+- Object-Oriented Programming (OOP)
+- Unit Testing
