@@ -35,10 +35,10 @@ customer-crm/
 
 ```json
 {
-    "name": "Ali",
-    "phone": "09123456789",
-    "email": "ali@gmail.com",
-    "city": "Tehran"
+    "name": "alex",
+    "phone": "09853456789",
+    "email": "alex@gmail.com",
+    "city": "berlin"
 }
 ```
 
